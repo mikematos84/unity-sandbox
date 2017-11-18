@@ -18,10 +18,4 @@ public class JsonExample : MonoBehaviour
         EmployeeData employee = JsonConvert.DeserializeObject<EmployeeData>(data);
         Debug.Log(employee.dpn_profile.FirstName + "," + employee.dpn_profile.LastName);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

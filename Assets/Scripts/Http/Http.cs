@@ -9,7 +9,6 @@ using Newtonsoft.Json.Linq;
 
 public class Http : MonoBehaviour
 {
-
     public InputField loginField;
     public InputField passwordField;
     public Text outputField;
@@ -37,11 +36,12 @@ public class Http : MonoBehaviour
     {
         HTTPRequest http = new HTTPRequest(new Uri(url + "/login"), HTTPMethods.Post, (req, resp) =>
         {
-            JObject o = JsonConvert.DeserializeObject<JObject>(resp.DataAsText);
-            accessToken = (string)o["access_token"];
-            refreshToken = (string)o["refresh_token"];
+            JsonWebToken jwt = JsonConvert.DeserializeObject<JsonWebToken>(resp.DataAsText);
+            accessToken = jwt.access_token;
+            refreshToken = jwt.refresh_token;
 
-            outputField.text = "Login Success\n\nAccess Token: " + accessToken + "\n\nRefresh Token:" + refreshToken;
+            string output = "Login Success\n\nAccess Token: {0}\n\nRefresh Token:{1}";
+            outputField.text = string.Format(output, accessToken, refreshToken);
         });
         http.AddField("login_id", loginField.text);
         http.AddField("password", passwordField.text);
@@ -58,12 +58,16 @@ public class Http : MonoBehaviour
     {
         HTTPRequest http = new HTTPRequest(new Uri(url + "/users"), HTTPMethods.Get, (req, resp) =>
         {
-            JObject o = JsonConvert.DeserializeObject<JObject>(resp.DataAsText);
-            outputField.text = resp.DataAsText;
-
-            foreach(KeyValuePair<string, List<string>> kvp in resp.Headers)
+            HTTPResponse httpResponse = JsonConvert.DeserializeObject<HTTPResponse>(resp.DataAsText);
+            outputField.text = "";
+            foreach (Body item in httpResponse.body)
             {
-                Debug.Log(kvp.Key);
+                string output = "Id:{0} \nLogin Id:{1} \nPassword:{2}";
+                outputField.text += string.Format(output,
+                    item.id,
+                    item.login_id,
+                    item.password
+                );
             }
         });
         http.AddHeader("Authorization", "Bearer " + accessToken);
@@ -71,3 +75,23 @@ public class Http : MonoBehaviour
         http.Send();
     }
 }
+
+public class JsonWebToken
+{
+    public string access_token;
+    public string refresh_token;
+}
+
+public class Body
+{
+    public string id { get; set; }
+    public string login_id { get; set; }
+    public string password { get; set; }
+}
+
+public class HTTPResponse
+{
+    public int status_code { get; set; }
+    public List<Body> body { get; set; }
+}
+
