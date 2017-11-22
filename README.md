@@ -2,6 +2,7 @@
 
 ## Folder Structure
 
+```
 /Animations
 /Fonts
 /Packages
@@ -13,3 +14,4 @@
 /Sounds
 /Sprites
 /StreamingAssets
+```
