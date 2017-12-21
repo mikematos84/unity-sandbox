@@ -3,68 +3,98 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DentedPixel;
+using UnityEngine.UI;
 
 namespace HeavyDev
 {
-    public class ModalWindow : MonoBehaviour
+    public class ModalWindowController : MonoBehaviour
     {
+        [SerializeField]
         float speed = 1f;
+
+        [SerializeField]
         LeanTweenType ease = LeanTweenType.easeInOutBack;
-        public enum Position { TopLeft, Top, TopRight, BottomLeft, Bottom, BottomRight, Left, Center, Right };
+
+        [SerializeField]
+        public enum Position
+        {
+            TopLeft,
+            Top,
+            TopRight,
+            BottomLeft,
+            Bottom,
+            BottomRight,
+            Left,
+            Center,
+            Right
+        };
+
         Position last;
         RectTransform rt;
 
         // Events
-        public Action WindowOpened;
-        public Action WindowClosed;
+        public event Action OnWindowOpen;
+        public event Action OnWindowClose;
 
+        // User Actions
+        public Button openButton;
+        public event Action OnCloseButtonClick;
+        public Button closeButton;
+        public event Action OnOpenButtonClick;
+        
         protected void Awake()
         {
             rt = GetComponent<RectTransform>();
+
+            if (openButton != null)
+                openButton.onClick.AddListener(() => { OnOpenButtonClick(); });
+
+            if (closeButton != null)
+                closeButton.onClick.AddListener(() => { OnCloseButtonClick(); });
         }
 
-        protected void Open(Position position = Position.Center)
+        public void Open(Position position = Position.Center)
         {
             MoveTo(position)
                 .setOnComplete(() =>
                 {
-                    if (WindowOpened != null)
+                    if (OnWindowOpen != null)
                     {
-                        WindowOpened();
+                        OnWindowOpen();
                     }
                 });
         }
 
-        protected void Close(Position position = Position.Left)
+        public void Close(Position position = Position.Left)
         {
             MoveTo(last)
                 .setOnComplete(() =>
                 {
-                    if (WindowClosed != null)
+                    if (OnWindowClose != null)
                     {
-                        WindowClosed();
+                        OnWindowClose();
                     }
                 });
         }
 
-        protected LTDescr MoveTo(Position position)
+        public LTDescr MoveTo(Position position)
         {
             return LeanTween.moveLocal(gameObject, GetPosition(position), speed).setEase(ease);
         }
 
-        protected void SlideTo(Position position)
+        public void SlideTo(Position position)
         {
             last = position;
             Open(position);
         }
 
-        protected void SetPosition(Position position)
+        public void SetPosition(Position position)
         {
             last = position;
             gameObject.transform.localPosition = GetPosition(position);
         }
-        
-        protected Vector2 GetPosition(Position position)
+
+        public Vector2 GetPosition(Position position)
         {
             Vector2 p = new Vector2() { x = 0f, y = 0f };
 
