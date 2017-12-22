@@ -932,11 +932,22 @@ namespace BestHTTP.SignalR
 
                     case RequestTypes.Poll:
                         uriBuilder.Path += "poll";
+
                         if (this.LastReceivedMessage != null)
                         {
                             queryBuilder.Append("messageId=");
                             queryBuilder.Append(this.LastReceivedMessage.MessageId);
                         }
+
+                        if (!string.IsNullOrEmpty(GroupsToken))
+                        {
+                            if (queryBuilder.Length > 0)
+                                queryBuilder.Append("&");
+
+                            queryBuilder.Append("groupsToken=");
+                            queryBuilder.Append(GroupsToken);
+                        }
+
                         goto default;
 
                     case RequestTypes.Send:
