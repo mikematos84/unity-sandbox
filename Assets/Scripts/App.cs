@@ -56,7 +56,7 @@ namespace HeavyDev
             }, (services) =>
             {
                 var list = services.Keys.ToArray();
-                Debug.Log(string.Format("<color=green>* Services registers {0}</color>", string.Join(",", list)));
+                Debug.Log(string.Format("<color=green>* Services registered [{0}]</color>", string.Join("], [", list)));
                 Messenger.SendNote(Notifications.ServicesReady);
                 Messenger.SendNote(Notifications.AppReady);
             });            

@@ -11,21 +11,20 @@ namespace HeavyDev
     public class LocalStorage
     {
         protected MonoBehaviour mono;
-        private readonly string filePath = "tfsave.txt";
-        private readonly bool encrypt = true;
-        private readonly string password = "dcil";
-        private readonly string tag = "TFM";
+        protected ES2Settings settings;
+        protected readonly string tag = Application.productName.Replace(" ", "_");
+
         private string file
         {
             get
             {
-                return filePath + "?tag=" + tag + "&encrypt=" + encrypt.ToString().ToLower() + "&password=" + password;
+                return String.Format("{0}.es", tag); 
             }
         }
 
         public bool isLoaded = false;
         public event Action OnLoadSuccess;
-        public event Action OnLoadFailed;
+        public event Action OnLoadError;
 
         private Dictionary<string, object> data = new Dictionary<string, object>();
 
@@ -33,6 +32,8 @@ namespace HeavyDev
         {
             this.mono = mono;
             Messenger.ListenTo(Notifications.ServicesReady, HandleServicesReady);
+            ConfigureSettings();
+            SetItem("Developer", "Mike Matos");
         }
 
         public void HandleServicesReady(object o)
@@ -40,11 +41,20 @@ namespace HeavyDev
             Messenger.StopListeningTo(Notifications.ServicesReady, HandleServicesReady);
         }
 
+        private void ConfigureSettings()
+        {
+            settings = new ES2Settings(file)
+            {
+                encrypt = true,
+                encryptionPassword = "password"
+            };
+        }
+
         public void Load()
         {
             if (ES2.Exists(file))
             {
-                ES2Data info = ES2.LoadAll(file);
+                ES2Data info = ES2.LoadAll(file, settings);
                 data = info.LoadDictionary<string, object>(tag);
                 isLoaded = true;
 
@@ -56,17 +66,17 @@ namespace HeavyDev
             else
             {
                 isLoaded = false;
-                if (OnLoadFailed != null)
+                if (OnLoadError != null)
                 {
-                    OnLoadFailed();
+                    OnLoadError();
                 }
             }
         }
 
         public void Save()
         {
-            ES2.Save(data, file);
-            Debug.Log("[LocalStorage] Saved");
+            ES2.Save(data, file, settings);
+            Debug.Log(String.Format("<color=green>* LocalStorage Saved</color>"));
         }
 
         public void Delete(string path = null)
