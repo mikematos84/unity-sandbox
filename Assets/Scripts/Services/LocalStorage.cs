@@ -10,6 +10,7 @@ namespace HeavyDev
 {
     public class LocalStorage
     {
+        protected MonoBehaviour mono;
         private readonly string filePath = "tfsave.txt";
         private readonly bool encrypt = true;
         private readonly string password = "dcil";
@@ -28,8 +29,9 @@ namespace HeavyDev
 
         private Dictionary<string, object> data = new Dictionary<string, object>();
 
-        public LocalStorage()
+        public LocalStorage(MonoBehaviour mono)
         {
+            this.mono = mono;
             Messenger.ListenTo(Notifications.ServicesReady, HandleServicesReady);
         }
 

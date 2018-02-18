@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Notifications
 {
-    public const string GameInitialized = "game.initialized";
-    public const string GameExit = "game.exit";
+    /// <summary>
+    /// Core application events
+    /// </summary>
+    public const string AppReady = "app.ready";
+    public const string AppExit = "app.exit";
     public const string ServicesReady = "services.ready";
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using BestHTTP;
@@ -14,8 +14,8 @@ namespace HeavyDev
         protected MonoBehaviour mono;
         protected string baseUrl;
 
-        protected LocalStorage localStorage;
-        
+        LocalStorage localStorage { get { return ServiceLocator.Find<LocalStorage>(); } }
+
         public HttpService(MonoBehaviour mono)
         {
             this.mono = mono;
@@ -24,9 +24,6 @@ namespace HeavyDev
 
         private void HandleServicesReady(object o)
         {
-            baseUrl = (string)App.config["base_url"];
-            Debug.Log(String.Format("[HttpService] Base Url => {0}", baseUrl));
-            localStorage = ServiceLocator.Find<LocalStorage>();
             Messenger.StopListeningTo(Notifications.ServicesReady, HandleServicesReady);
         }
 
@@ -42,15 +39,29 @@ namespace HeavyDev
             Debug.Log("[HttpService] Updated Tokens");
         }
 
-        public HTTPRequest Request(string url, string data, HTTPMethods method, Action<HTTPRequest, HTTPResponse> callback)
+        public HTTPRequest Request(string url, string data, HTTPMethods method, Action<HTTPRequest, HTTPResponse> success, Action<HTTPRequest, HTTPResponse> error)
         {
             var http = new HTTPRequest(new Uri(baseUrl + url), method, (req, resp) =>
             {
-                // Update/refresh tokens if found in header
-                UpdateTokens(resp);
+                switch (req.State)
+                {
+                    case HTTPRequestStates.Finished:
+                        // Update/refresh tokens if found in header
+                        UpdateTokens(resp);
+                        // send success
+                        if (success != null)
+                        {
+                            success(req, resp);
+                        }
+                        break;
 
-                // send callback
-                callback(req, resp);
+                    case HTTPRequestStates.Error:
+                        if (error != null)
+                        {
+                            error(req, resp);
+                        }
+                        break;
+                }
             });
 
             // set Json Web Token header information to allow access
@@ -62,55 +73,90 @@ namespace HeavyDev
             if (data != null)
             {
                 http.RawData = Encoding.UTF8.GetBytes(data);
-                Debug.Log("Passing Data => " + data);
+                // Debug.Log("Passing Data => " + data);
             }
 
             return http;
         }
 
-        public HTTPRequest Login(string username, string password, Action<HTTPRequest, HTTPResponse> callback)
+        public HTTPRequest Login(string username, string password, Action<HTTPRequest, HTTPResponse> success, Action<HTTPRequest, HTTPResponse> error)
         {
             var http = new HTTPRequest(new Uri(baseUrl + "/login"), HTTPMethods.Post, (req, resp) =>
             {
-                // Read response code
-                if (resp.StatusCode == 200)
+                switch (req.State)
                 {
-                    // deserialize the Json Web Token information returned
-                    JWTResponse jwt = JsonConvert.DeserializeObject<JWTResponse>(resp.DataAsText);
+                    case HTTPRequestStates.Finished:
+                        // Read response code
+                        if (resp.StatusCode == 200)
+                        {
+                            // deserialize the Json Web Token information returned
+                            JWTResponse jwt = JsonConvert.DeserializeObject<JWTResponse>(resp.DataAsText);
 
-                    // save the access token and refresh token
-                    localStorage.SetItems(new Dictionary<string, object> {
-                        { "access_token", jwt.access_token },
-                        { "refresh_token", jwt.refresh_token }
-                    });
+                            // save the access token and refresh token
+                            localStorage.SetItems(new Dictionary<string, object> {
+                                { "access_token", jwt.access_token },
+                                { "refresh_token", jwt.refresh_token }
+                            });
+                        }
+
+                        // send success
+                        if (success != null)
+                        {
+                            success(req, resp);
+                        }
+                        break;
+
+                    case HTTPRequestStates.Error:
+                        if (error != null)
+                        {
+                            error(req, resp);
+                        }
+                        break;
                 }
-
-                // send callback
-                callback(req, resp);
             });
             http.AddField("username", username);
             http.AddField("password", password);
             return http;
         }
 
-        public HTTPRequest Post(string url, string data, Action<HTTPRequest, HTTPResponse> callback)
+        public HTTPRequest Post(string url, string data, Action<HTTPRequest, HTTPResponse> success)
         {
-            return Request(url, data, HTTPMethods.Post, callback);
+            return Request(url, data, HTTPMethods.Post, success, null);
         }
 
-        public HTTPRequest Get(string url, Action<HTTPRequest, HTTPResponse> callback)
+        public HTTPRequest Post(string url, string data, Action<HTTPRequest, HTTPResponse> success, Action<HTTPRequest, HTTPResponse> error)
         {
-            return Request(url, null, HTTPMethods.Get, callback);
+            return Request(url, data, HTTPMethods.Post, success, error);
         }
 
-        public HTTPRequest Delete(string url, Action<HTTPRequest, HTTPResponse> callback)
+        public HTTPRequest Get(string url, Action<HTTPRequest, HTTPResponse> success)
         {
-            return Request(url, null, HTTPMethods.Delete, callback);
+            return Request(url, null, HTTPMethods.Get, success, null);
         }
 
-        public HTTPRequest Put(string url, string data, Action<HTTPRequest, HTTPResponse> callback)
+        public HTTPRequest Get(string url, Action<HTTPRequest, HTTPResponse> success, Action<HTTPRequest, HTTPResponse> error)
         {
-            return Request(url, null, HTTPMethods.Put, callback);
+            return Request(url, null, HTTPMethods.Get, success, error);
+        }
+
+        public HTTPRequest Delete(string url, Action<HTTPRequest, HTTPResponse> success)
+        {
+            return Request(url, null, HTTPMethods.Delete, success, null);
+        }
+
+        public HTTPRequest Delete(string url, Action<HTTPRequest, HTTPResponse> success, Action<HTTPRequest, HTTPResponse> error)
+        {
+            return Request(url, null, HTTPMethods.Delete, success, error);
+        }
+
+        public HTTPRequest Put(string url, string data, Action<HTTPRequest, HTTPResponse> success)
+        {
+            return Request(url, null, HTTPMethods.Put, success, null);
+        }
+
+        public HTTPRequest Put(string url, string data, Action<HTTPRequest, HTTPResponse> success, Action<HTTPRequest, HTTPResponse> error)
+        {
+            return Request(url, null, HTTPMethods.Put, success, error);
         }
     }
 

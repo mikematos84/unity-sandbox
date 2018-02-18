@@ -58,6 +58,20 @@ public sealed class ServiceLocator
         }
     }
 
+    public static void Register(List<object> insts, Action<Dictionary<string, object>> callback)
+    {
+        foreach (object inst in insts)
+        {
+            if (!dict.ContainsKey(inst.GetType().ToString()))
+            {
+                dict[inst.GetType().ToString()] = inst;
+            }
+        }
+
+        if (callback != null)
+            callback(dict);
+    }
+
     public static T Find<T>(string name) where T : class
     {
         return dict[name] as T;
