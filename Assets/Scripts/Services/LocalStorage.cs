@@ -32,17 +32,6 @@ namespace HeavyDev
             this.mono = mono;
             Messenger.ListenTo(Notifications.ServicesReady, HandleServicesReady);
             ConfigureSettings();
-
-            SetItems(new Dictionary<string, object>()
-            {
-                { "First Name", "Mike" },
-                { "Last Name", "Matos" }
-            });
-
-            OnLoadSuccess -= HandleLoadSuccess;
-            OnLoadSuccess += HandleLoadSuccess;
-
-            Load();
         }
 
         private void HandleLoadSuccess()
