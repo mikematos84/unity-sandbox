@@ -1,39 +1,53 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using System;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Linq;
 using Newtonsoft;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HeavyDev
 {
     public class LocalStorage
     {
+        protected static readonly Regex pattern = new Regex("[ -]");
+        protected static readonly string evaluator = "_";
+
         protected MonoBehaviour mono;
         protected ES2Settings settings;
-        protected readonly string tag = Application.productName.Replace(" ", "_");
 
-        private string file
-        {
-            get
-            {
-                return String.Format("{0}.es", tag); 
-            }
-        }
+        private string file = String.Format("{0}.es2", pattern.Replace(Application.productName, evaluator));
 
         public bool isLoaded = false;
+        public DateTime lastSave;
         public event Action OnLoadSuccess;
         public event Action OnLoadError;
 
-        private Dictionary<string, object> data = new Dictionary<string, object>();
+        private Dictionary<string, object> dict = new Dictionary<string, object>();
 
         public LocalStorage(MonoBehaviour mono)
         {
             this.mono = mono;
             Messenger.ListenTo(Notifications.ServicesReady, HandleServicesReady);
             ConfigureSettings();
-            SetItem("Developer", "Mike Matos");
+
+            SetItems(new Dictionary<string, object>()
+            {
+                { "First Name", "Mike" },
+                { "Last Name", "Matos" }
+            });
+
+            OnLoadSuccess -= HandleLoadSuccess;
+            OnLoadSuccess += HandleLoadSuccess;
+
+            Load();
+        }
+
+        private void HandleLoadSuccess()
+        {
+            Debug.Log(String.Format("<color=yellow>{0}</color>", String.Join(", ", dict.Keys.ToArray<string>())));
         }
 
         public void HandleServicesReady(object o)
@@ -41,11 +55,26 @@ namespace HeavyDev
             Messenger.StopListeningTo(Notifications.ServicesReady, HandleServicesReady);
         }
 
+        /// <summary>
+        /// Sanitizing incoming tag to return lowercase version with spaces " "
+        /// and dashes "-" replaced by evaluator
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public string SanitizeTag(string tag)
+        {
+            return pattern.Replace(tag, evaluator).ToLower();
+        }
+        /// <summary>
+        /// Handles ES2 Configuration
+        /// </summary>
         private void ConfigureSettings()
         {
             settings = new ES2Settings(file)
             {
+                tag = SanitizeTag("AppData"),
                 encrypt = true,
+                encryptionType = ES2Settings.EncryptionType.AES128,
                 encryptionPassword = "password"
             };
         }
@@ -54,8 +83,8 @@ namespace HeavyDev
         {
             if (ES2.Exists(file))
             {
-                ES2Data info = ES2.LoadAll(file, settings);
-                data = info.LoadDictionary<string, object>(tag);
+                ES2Data es2data = ES2.LoadAll(file, settings);
+                dict = es2data.LoadDictionary<string, object>(settings.tag);
                 isLoaded = true;
 
                 if (OnLoadSuccess != null)
@@ -75,72 +104,79 @@ namespace HeavyDev
 
         public void Save()
         {
-            ES2.Save(data, file, settings);
-            Debug.Log(String.Format("<color=green>* LocalStorage Saved</color>"));
+            var key = SanitizeTag("Last Save");
+            lastSave = DateTime.Now;
+            dict[key] = lastSave;
+            ES2.Save(dict, file, settings);
+            Debug.Log(String.Format("<color=green>LocalStorage Saved : <b>{0}</b></color>", lastSave));
         }
 
-        public void Delete(string path = null)
+        public void Delete(string file = null)
         {
-            if (path == null)
-                path = file;
+            if (file != null)
+                this.file = file;
 
-            if (ES2.Exists(path))
-            {
-                ES2.Delete(path);
-            }
+            if (ES2.Exists(this.file))
+                ES2.Delete(this.file);
         }
 
         public T GetItem<T>(string key)
         {
-            if (data.ContainsKey(key))
-                return (T)data[key];
+            key = SanitizeTag(key);
+            if (dict.ContainsKey(key))
+                return (T)dict[key];
 
             return default(T);
         }
 
         public object GetItem(string key)
         {
-            if (data.ContainsKey(key))
-                return data[key];
+            key = SanitizeTag(key);
+            if (dict.ContainsKey(key))
+                return dict[key];
 
             return default(object);
         }
 
         public void SetItem(string key, object value)
         {
-            data[key] = value;
+            key = SanitizeTag(key);
+            dict[key] = value;
             Save();
         }
 
         public void SetItems(Dictionary<string, object> items)
         {
-            foreach (KeyValuePair<string, object> kvp in items)
+            items.ToList().ForEach((kvp) =>
             {
-                data[kvp.Key] = kvp.Value;
-            }
+                var key = SanitizeTag(kvp.Key);
+                dict[key] = kvp.Value;
+            });
             Save();
         }
 
         public void RemoveItem(string key)
         {
-            if (!data.ContainsKey(key))
+            key = SanitizeTag(key);
+            if (!dict.ContainsKey(key))
                 return;
 
-            data.Remove(key);
+            dict.Remove(key);
             Save();
         }
 
-        public void RemoveItems(string[] key)
+        public void RemoveItems(string[] keys)
         {
             bool atLeastOne = false;
-            for (int i = 0; i < key.Length; i++)
+            keys.ToList().ForEach((key) =>
             {
-                if (data.ContainsKey(key[i]))
+                key = SanitizeTag(key);
+                if (dict.ContainsKey(key))
                 {
                     atLeastOne = true;
-                    data.Remove(key[i]);
+                    dict.Remove(key);
                 }
-            }
+            });
 
             if (atLeastOne)
                 Save();

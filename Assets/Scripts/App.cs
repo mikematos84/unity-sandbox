@@ -31,14 +31,14 @@ namespace HeavyDev
         /// </summary>
         private void LoadConfigurationFile()
         {
-            Debug.Log(string.Format("<color=green>* Loading configuration file</color>"));
+            Debug.Log(string.Format("<color=green>Loading configuration file</color>"));
             TextAsset asset = Resources.Load("config") as TextAsset;
             if (asset)
             {
                 config.Clear();
                 config = JsonConvert.DeserializeObject<Dictionary<string, object>>(asset.text);
             }
-            Debug.Log(string.Format("<color=green>* Configuration loaded</color>"));
+            Debug.Log(string.Format("<color=green>Configuration loaded</color>"));
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace HeavyDev
         /// </summary>
         private void RegisterServices()
         {
-            Debug.Log(string.Format("<color=green>* Registering services</color>"));
+            Debug.Log(string.Format("<color=green>Registering services</color>"));
             ServiceLocator.Register(new List<object>
             {
                 //Register Local Storage
@@ -56,7 +56,7 @@ namespace HeavyDev
             }, (services) =>
             {
                 var list = services.Keys.ToArray();
-                Debug.Log(string.Format("<color=green>* Services registered [{0}]</color>", string.Join("], [", list)));
+                Debug.Log(string.Format("<color=green>Services registered [{0}]</color>", string.Join("], [", list)));
                 Messenger.SendNote(Notifications.ServicesReady);
                 Messenger.SendNote(Notifications.AppReady);
             });            
@@ -70,12 +70,12 @@ namespace HeavyDev
         /// <param name="obj"></param>
         private void HandleAppReady(object obj)
         {
-            Debug.Log(string.Format("<color=green>* Application Ready</color>"));
+            Debug.Log(string.Format("<color=green>Application Ready</color>"));
         }
 
         private void HandleAppExit(object obj)
         {
-            Debug.Log(string.Format("<color=green>* Application Excited</color>"));
+            Debug.Log(string.Format("<color=green>Application Excited</color>"));
         }
     }
 }
