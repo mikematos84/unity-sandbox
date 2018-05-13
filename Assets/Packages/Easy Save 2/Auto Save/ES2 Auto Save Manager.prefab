@@ -9,6 +9,8 @@ GameObject:
   m_Component:
   - component: {fileID: 424396}
   - component: {fileID: 11484918}
+  - component: {fileID: 114431745185366106}
+  - component: {fileID: 114414547837684890}
   m_Layer: 0
   m_Name: ES2 Auto Save Manager
   m_TagString: Untagged
@@ -104,3 +106,31 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 181648}
   m_IsPrefabParent: 1
+--- !u!114 &114414547837684890
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 181648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 112998890, guid: 325c5b2a7434372429c2ca9d61dba58e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _guid: ae960477-633e-4d29-8dd8-c7339c3fcde0
+--- !u!114 &114431745185366106
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 181648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -605777808, guid: 325c5b2a7434372429c2ca9d61dba58e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _guid: 
+  _referenceCollection:
+    _collection:
+    - {fileID: 181648}
+  _assetGuid: 7f22aeb4593a444b7a3c783dd2b58e8c
