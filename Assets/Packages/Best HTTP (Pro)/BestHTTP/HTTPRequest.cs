@@ -86,7 +86,8 @@ namespace BestHTTP
                                                           HTTPMethods.Put.ToString().ToUpper(),
                                                           HTTPMethods.Delete.ToString().ToUpper(),
                                                           HTTPMethods.Patch.ToString().ToUpper(),
-                                                          HTTPMethods.Merge.ToString().ToUpper()
+                                                          HTTPMethods.Merge.ToString().ToUpper(),
+                                                          HTTPMethods.Options.ToString().ToUpper()
                                                       };
 
         /// <summary>

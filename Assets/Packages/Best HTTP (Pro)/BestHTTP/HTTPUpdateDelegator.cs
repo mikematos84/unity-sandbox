@@ -45,6 +45,8 @@ namespace BestHTTP
         /// </summary>
         public static System.Func<bool> OnBeforeApplicationQuit;
 
+        public static System.Action<bool> OnApplicationForegroundStateChanged;
+
         #endregion
 
         private static bool IsSetupCalled;
@@ -84,8 +86,13 @@ namespace BestHTTP
                         UnityEditor.EditorApplication.update += Instance.Update;
                     }
 
+#if UNITY_2017_2_OR_NEWER
+                    UnityEditor.EditorApplication.playModeStateChanged -= Instance.OnPlayModeStateChanged;
+                    UnityEditor.EditorApplication.playModeStateChanged += Instance.OnPlayModeStateChanged;
+#else
                     UnityEditor.EditorApplication.playmodeStateChanged -= Instance.OnPlayModeStateChanged;
                     UnityEditor.EditorApplication.playmodeStateChanged += Instance.OnPlayModeStateChanged;
+#endif
 #endif
                 }
                 HTTPManager.Logger.Information("HTTPUpdateDelegator", "Instance Created!");
@@ -114,7 +121,9 @@ namespace BestHTTP
             if (IsThreaded)
             {
 #if NETFX_CORE
+#pragma warning disable 4014
                 Windows.System.Threading.ThreadPool.RunAsync(ThreadFunc);
+#pragma warning restore 4014
 #else
                 System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(ThreadFunc));
 #endif
@@ -172,6 +181,15 @@ namespace BestHTTP
         }
 
 #if UNITY_EDITOR
+#if UNITY_2017_2_OR_NEWER
+        void OnPlayModeStateChanged(UnityEditor.PlayModeStateChange playMode)
+        {
+            if (playMode == UnityEditor.PlayModeStateChange.EnteredPlayMode)
+                UnityEditor.EditorApplication.update -= Update;
+            else if (playMode == UnityEditor.PlayModeStateChange.ExitingPlayMode)
+                UnityEditor.EditorApplication.update += Update;
+        }
+#else
         void OnPlayModeStateChanged()
         {
             if (UnityEditor.EditorApplication.isPlaying)
@@ -179,6 +197,8 @@ namespace BestHTTP
             else if (!UnityEditor.EditorApplication.isPlaying)
                 UnityEditor.EditorApplication.update += Update;
         }
+
+#endif
 #endif
 
         void OnDisable()
@@ -189,6 +209,12 @@ namespace BestHTTP
             if (UnityEditor.EditorApplication.isPlaying)
 #endif
                 OnApplicationQuit();
+        }
+
+        void OnApplicationPause(bool isPaused)
+        {
+            if (HTTPUpdateDelegator.OnApplicationForegroundStateChanged != null)
+                HTTPUpdateDelegator.OnApplicationForegroundStateChanged(isPaused);
         }
 
         void OnApplicationQuit()
@@ -222,7 +248,11 @@ namespace BestHTTP
 
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.update -= Update;
+#if UNITY_2017_2_OR_NEWER
+            UnityEditor.EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+#else
             UnityEditor.EditorApplication.playmodeStateChanged -= OnPlayModeStateChanged;
+#endif
 #endif
         }
     }

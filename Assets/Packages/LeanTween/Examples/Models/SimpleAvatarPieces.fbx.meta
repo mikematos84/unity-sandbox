@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: f9f32fdb4bc7744849a33427aedb8702
 ModelImporter:
-  serializedVersion: 19
+  serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
     100002: SimpleAvatarBody
@@ -246,26 +246,88 @@ ModelImporter:
     4300092: SimpleAvatarBody.001
     4300094: SimpleAvatarBody
     11100000: //RootNode
+    11400000: SimpleAvatarBody
+    11400002: SimpleAvatarBody.001
+    11400004: SimpleAvatarBody.002
+    11400006: SimpleAvatarBody.003
+    11400008: SimpleAvatarBody.004
+    11400010: SimpleAvatarBody.005
+    11400012: SimpleAvatarBody.006
+    11400014: SimpleAvatarBody.007
+    11400016: SimpleAvatarBody.008
+    11400018: SimpleAvatarBody.009
+    11400020: SimpleAvatarBody.010
+    11400022: SimpleAvatarBody.011
+    11400024: SimpleAvatarBody.012
+    11400026: SimpleAvatarBody.013
+    11400028: SimpleAvatarBody.014
+    11400030: SimpleAvatarBody.015
+    11400032: SimpleAvatarBody.016
+    11400034: SimpleAvatarBody.017
+    11400036: SimpleAvatarBody.018
+    11400038: SimpleAvatarBody.019
+    11400040: SimpleAvatarBody.020
+    11400042: SimpleAvatarBody.021
+    11400044: SimpleAvatarBody.022
+    11400046: SimpleAvatarBody.023
+    11400048: SimpleAvatarBody.024
+    11400050: SimpleAvatarBody.025
+    11400052: SimpleAvatarBody.026
+    11400054: SimpleAvatarBody.027
+    11400056: SimpleAvatarBody.028
+    11400058: SimpleAvatarBody.029
+    11400060: SimpleAvatarBody.030
+    11400062: SimpleAvatarBody.031
+    11400064: SimpleAvatarBody.032
+    11400066: SimpleAvatarBody.033
+    11400068: SimpleAvatarBody.034
+    11400070: SimpleAvatarBody.035
+    11400072: SimpleAvatarBody.036
+    11400074: SimpleAvatarBody.037
+    11400076: SimpleAvatarBody.038
+    11400078: SimpleAvatarBody.039
+    11400080: SimpleAvatarBody.040
+    11400082: SimpleAvatarBody.041
+    11400084: SimpleAvatarBody.042
+    11400086: SimpleAvatarBody.043
+    11400088: SimpleAvatarBody.046
+    11400090: SimpleAvatarBody.047
+    11400092: SimpleAvatarBody.048
+    11400094: SimpleAvatarBodyRim
+    11400096: //RootNode
+    11400098: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SimpleAvatarMat
+    second: {fileID: 2100000, guid: 5732f0a6e68964f3eb5c3ebb94242055, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 3
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations: []
     isReadable: 1
   meshes:
@@ -273,13 +335,18 @@ ModelImporter:
     globalScale: 0.01
     meshCompression: 0
     addColliders: 0
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -289,9 +356,11 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 4
+    normalCalculationMode: 0
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 2
     human: []
     skeleton: []
     armTwist: 0.5
@@ -302,7 +371,10 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 1
   humanoidOversampling: 1

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using DentedPixel;
 
-public class GeneralBasicCS : MonoBehaviour {
+public class GeneralBasic : MonoBehaviour {
 
 	public GameObject prefabAvatar;
 
@@ -30,6 +30,7 @@ public class GeneralBasicCS : MonoBehaviour {
 	
 		// Call methods after a certain time period
 		LeanTween.delayedCall(gameObject, 0.2f, advancedExamples);
+
 	}
 
 	// Advanced Examples

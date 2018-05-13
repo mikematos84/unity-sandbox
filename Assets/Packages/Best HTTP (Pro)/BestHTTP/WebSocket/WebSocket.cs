@@ -86,6 +86,12 @@ namespace BestHTTP.WebSocket
         public int PingFrequency { get; set; }
 
         /// <summary>
+        /// If StartPingThread set to true, the plugin will close the connection and emit an OnError/OnErrorDesc event if no
+        /// message is received from the server in the given time. Its default value is 10 sec.
+        /// </summary>
+        public TimeSpan CloseAfterNoMesssage { get; set; }
+
+        /// <summary>
         /// The internal HTTPRequest object.
         /// </summary>
         public HTTPRequest InternalRequest { get; private set; }
@@ -94,6 +100,12 @@ namespace BestHTTP.WebSocket
         /// IExtension implementations the plugin will negotiate with the server to use.
         /// </summary>
         public IExtension[] Extensions { get; private set; }
+
+        /// <summary>
+        /// Latency calculated from the ping-pong message round-trip times.
+        /// </summary>
+        public int Latency { get { return webSocket.Latency; } }
+
 #endif
 
         /// <summary>
@@ -195,6 +207,7 @@ namespace BestHTTP.WebSocket
 #if !UNITY_WEBGL || UNITY_EDITOR
             // Set up some default values.
             this.PingFrequency = 1000;
+            this.CloseAfterNoMesssage = TimeSpan.FromSeconds(10);
 
             // If there no port set in the uri, we must set it now.
             if (uri.Port == -1)
@@ -245,6 +258,7 @@ namespace BestHTTP.WebSocket
 
 #if !BESTHTTP_DISABLE_CACHING && (!UNITY_WEBGL || UNITY_EDITOR)
             InternalRequest.DisableCache = true;
+            InternalRequest.DisableRetry = true;
 #endif
 
 #if !BESTHTTP_DISABLE_PROXY

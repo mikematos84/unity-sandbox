@@ -64,6 +64,7 @@ public class WebSocketSample : MonoBehaviour
                 {
                     // Create the WebSocket instance
                     webSocket = new WebSocket(new Uri(address));
+                    webSocket.StartPingThread = true;
 
 #if !BESTHTTP_DISABLE_PROXY && !UNITY_WEBGL
                     if (HTTPManager.Proxy != null)

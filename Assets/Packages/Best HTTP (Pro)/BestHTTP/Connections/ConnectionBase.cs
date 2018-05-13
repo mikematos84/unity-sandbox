@@ -105,7 +105,9 @@ namespace BestHTTP
             if (IsThreaded)
             {
 #if NETFX_CORE
+#pragma warning disable 4014
                 Windows.System.Threading.ThreadPool.RunAsync(ThreadFunc);
+#pragma warning restore 4014
 #else
                 ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadFunc));
                 //new Thread(ThreadFunc)

@@ -164,7 +164,7 @@ namespace BestHTTP.Examples
                     Debug.LogWarning("Request Aborted!");
                     break;
 
-                // Ceonnecting to the server is timed out.
+                // Connecting to the server is timed out.
                 case HTTPRequestStates.ConnectionTimedOut:
                     Debug.LogError("Connection Timed Out!");
                     break;

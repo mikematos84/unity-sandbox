@@ -38,7 +38,7 @@ namespace DentedPixel.LTExamples{
 //			Time.timeScale = 0.25f;
 
 			LeanTest.timeout = 46f;
-			LeanTest.expected = 57;
+			LeanTest.expected = 59;
 
 			LeanTween.init(15 + 1200);
 
@@ -250,6 +250,10 @@ namespace DentedPixel.LTExamples{
 			LeanTween.delayedCall(0.2f, ()=>{
 				LeanTest.expect( value2UpdateCalled, "VALUE2 UPDATE");
 			} );
+
+			// check descr
+//			LTDescr descr2 = LeanTween.descr( descrId );
+//			LeanTest.expect(descr2 == null,"DESCRIPTION STARTS AS NULL");
 			
 			StartCoroutine( timeBasedTesting() );
 		}
@@ -303,6 +307,31 @@ namespace DentedPixel.LTExamples{
 			LeanTween.moveSplineLocal(cubeSpline, roundSpline, 0.5f).setOnComplete( ()=>{
 				LeanTest.expect(Vector3.Distance(onStartPosSpline, cubeSpline.transform.position) <= 0.01f, "SPLINE CLOSED LOOP SHOULD END AT START","onStartPos:"+onStartPosSpline+" onEnd:"+cubeSpline.transform.position+" dist:"+Vector3.Distance(onStartPosSpline, cubeSpline.transform.position));
 			});
+
+			// Sequence test, do three tweens and make sure they end at the right points
+			GameObject cubeSeq = cubeNamed("cSeq");
+			var seq = LeanTween.sequence().append(LeanTween.moveX(cubeSeq, 100f, 0.2f));
+			seq.append(0.1f).append(LeanTween.scaleX(cubeSeq, 2f, 0.1f));
+			seq.append(() => {
+				LeanTest.expect(cubeSeq.transform.position.x==100f,"SEQ MOVE X FINISHED","move x:"+cubeSeq.transform.position.x);
+				LeanTest.expect(cubeSeq.transform.localScale.x==2f,"SEQ SCALE X FINISHED","scale x:"+cubeSeq.transform.localScale.x);
+			}).setScale(0.2f);
+
+			// Bounds check
+			GameObject cubeBounds = cubeNamed("cBounds");
+			bool didPassBounds = true;
+			Vector3 failPoint = Vector3.zero;
+			LeanTween.move(cubeBounds, new Vector3(10,10,10), 0.1f).setOnUpdate((float val) => {
+//				Debug.LogWarning("cubeBounds x:"+cubeBounds.transform.position.x + " y:"+ cubeBounds.transform.position.y+" z:"+cubeBounds.transform.position.z);
+				if(cubeBounds.transform.position.x<0f || cubeBounds.transform.position.x>10f || cubeBounds.transform.position.y<0f || cubeBounds.transform.position.y>10f || cubeBounds.transform.position.z<0f || cubeBounds.transform.position.z>10f){
+					didPassBounds = false;
+					failPoint = cubeBounds.transform.position;
+//					Debug.LogError("OUT OF BOUNDS");
+				}
+			}).setLoopPingPong().setRepeat(8).setOnComplete(()=>{
+				LeanTest.expect(didPassBounds,"OUT OF BOUNDS","pos x:"+failPoint.x + " y:"+ failPoint.y+" z:"+failPoint.z);
+			});
+
 			
 			// Groups of tweens testing
 			groupTweens = new LTDescr[ 1200 ];
@@ -363,7 +392,7 @@ namespace DentedPixel.LTExamples{
 				yield return null;
 
 			LeanTest.expect( descriptionMatchCount==groupTweens.Length, "GROUP IDS MATCH" );
-			int expectedSearch = groupTweens.Length+5;
+			int expectedSearch = groupTweens.Length+7;
 			LeanTest.expect( LeanTween.maxSearch<=expectedSearch, "MAX SEARCH OPTIMIZED", "maxSearch:"+LeanTween.maxSearch+" should be:"+ expectedSearch);
 			LeanTest.expect( LeanTween.isTweening() == true, "SOMETHING IS TWEENING" );
 
@@ -430,7 +459,7 @@ namespace DentedPixel.LTExamples{
 				float end = Time.realtimeSinceStartup;
 				float diff = end - start;
 				
-				LeanTest.expect( Mathf.Abs( expectedTime - diff) < 0.05f, "SCALED TIMING DIFFERENCE", "expected to complete in roughly "+expectedTime+" but completed in "+diff );
+				LeanTest.expect( Mathf.Abs( expectedTime - diff) < 0.06f, "SCALED TIMING DIFFERENCE", "expected to complete in roughly "+expectedTime+" but completed in "+diff );
 				LeanTest.expect( Mathf.Approximately(cube1.transform.position.x, -5f), "SCALED ENDING POSITION", "expected to end at -5f, but it ended at "+cube1.transform.position.x);
 				LeanTest.expect( onUpdateWasCalled, "ON UPDATE FIRED" );
 			});
