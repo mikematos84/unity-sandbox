@@ -10,10 +10,33 @@ using Newtonsoft.Json.Linq;
 
 public class SceneController : MonoBehaviour
 {
-    JObject profile;    
+    JObject profile;
+    SceneLoader sceneLoader;
+    
+    [Header("Prefabs")]
+    [SerializeField] SceneLoader m_SceneLoader;
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
+    {
+        CheckCoreServices();
+    }
+
+    protected virtual void CheckCoreServices()
+    {
+        sceneLoader = ServiceLocator.Find<SceneLoader>();
+        if (!sceneLoader)
+        {
+            ServiceLocator.Register<SceneLoader>(Instantiate(m_SceneLoader));
+            sceneLoader = ServiceLocator.Find<SceneLoader>();
+            sceneLoader.FadeOut();
+            Debug.Log("Registered missing service");
+        }
+
+        LoadSceneData();
+    }
+
+    protected virtual void LoadSceneData()
     {
         string filePath = Application.streamingAssetsPath + "/profile.json";
         new HTTPRequest(new Uri(filePath), HTTPMethods.Get, (req, resp) =>
@@ -32,7 +55,7 @@ public class SceneController : MonoBehaviour
         }).Send();
     }
 
-    void Initialize()
+    protected virtual void Initialize()
     {
         JToken levels = profile["gameData"]["levels"];
         levels.ToList().ForEach(level =>

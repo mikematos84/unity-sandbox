@@ -16,8 +16,6 @@ namespace HeavyDev
         public static Dictionary<string, object> config = new Dictionary<string, object>();
 
         public string sceneToLoad = "Main";
-        public string loadedScene;
-
         public TextMeshProUGUI sceneLabel;
 
         public bool isReady = false;
@@ -34,8 +32,7 @@ namespace HeavyDev
 
         private void HandleSceneLoaded(Scene scene, LoadSceneMode sceneMode)
         {
-            loadedScene = scene.name;
-            sceneLabel.text = loadedScene;
+            sceneLabel.text = scene.name;
         }
 
         /// <summary>
@@ -91,9 +88,9 @@ namespace HeavyDev
                 // Register Local Storage
                 new LocalStorage(this),
                 // Register HttpService
-                new HttpService(this), 
-                // Canvas Fader
-                GetComponentInChildren<CanvasFader>(true)
+                new HttpService(this),
+                // Scene Loader
+                GetComponentInChildren<SceneLoader>(true)
             }, (services) =>
             {
                 var list = services.Keys.ToArray();
@@ -131,47 +128,9 @@ namespace HeavyDev
             Debug.Log(string.Format("<color=green>Application Excited</color>"));
         }
 
-        public IEnumerator UnloadAsync()
+        public void LoadScene(string sceneName)
         {
-            AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(loadedScene);
-            while (!asyncUnload.isDone)
-            {
-                yield return null;
-            }
-            Debug.Log(string.Format("{0} Scene Unloaded", loadedScene));
-        }
-
-        public IEnumerator LoadAsync(string sceneName)
-        {
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-            while (!asyncLoad.isDone)
-            {
-                yield return null;
-            }
-            Debug.Log(string.Format("{0} Scene Loaded", sceneName));
-        }
-
-        public LTDescr LoadScene(string sceneName)
-        {
-            CanvasFader canvasFader = ServiceLocator.Find<CanvasFader>();
-
-            LTSeq seq = LeanTween.sequence();
-
-            if (loadedScene != "App" && loadedScene != null)
-            {
-                seq.append(canvasFader.FadeIn());
-                seq.append(() => StartCoroutine(UnloadAsync()));
-            }
-
-            seq.append(() => StartCoroutine(LoadAsync(sceneName)));
-            seq.append(canvasFader.FadeOut());
-
-            return seq.tween;
-        }
-
-        private void OnDisable()
-        {
-            SceneManager.sceneLoaded -= HandleSceneLoaded;
+            ServiceLocator.Find<SceneLoader>().LoadScene(sceneName);
         }
     }
 }
