@@ -44,7 +44,7 @@ public class Building : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if(!isLocked)
+        if(app != null && !isLocked)
             app.LoadScene(sceneToLoad);
     }
 }

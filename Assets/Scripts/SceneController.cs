@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 public class SceneController : MonoBehaviour
 {
     JObject profile;
-    SceneLoader sceneLoader;
+    protected SceneLoader sceneLoader;
     
     [Header("Prefabs")]
     [SerializeField] SceneLoader m_SceneLoader;

@@ -8,9 +8,9 @@ using System;
 public class CanvasFader : MonoBehaviour
 {
     [SerializeField] Image image;
-    public float time = 1f;
     [SerializeField] LeanTweenType easeType = LeanTweenType.easeInOutQuint;
 
+    public float time = 1f;
     public bool isFading = false;
 
     public Action OnFadeInComplete;

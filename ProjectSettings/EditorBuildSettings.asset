@@ -5,9 +5,25 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scripts/Http/Http.unity
-    guid: f8453ef421b6d4b44b295ed99f902036
   - enabled: 1
-    path: Assets/AndroidHttpHelper/examplescene.unity
-    guid: c3062b09755918743af4221d41a62f02
+    path: Assets/Scenes/App.unity
+    guid: 03b8fd7c9043f6d438578000dbda0027
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: ee44f704b3a06754bb781d882f483547
+  - enabled: 1
+    path: Assets/Scenes/Scene1.unity
+    guid: 96899c8d2fc4bbd4a8cf48ad8b1e4d3f
+  - enabled: 1
+    path: Assets/Scenes/Scene2.unity
+    guid: d09f8af6d0cfd07408fe1a27916d2217
+  - enabled: 1
+    path: Assets/Scenes/Scene3.unity
+    guid: 72d00b00f2d896a42a2fb0d87f6ee2c5
+  - enabled: 1
+    path: Assets/Scenes/Scene4.unity
+    guid: 4d6f73e54ef24924da943c4950fefae2
+  - enabled: 1
+    path: Assets/Scenes/Scene5.unity
+    guid: 81ae5367a434de24faca41cddd424d3e
+  m_configObjects: {}

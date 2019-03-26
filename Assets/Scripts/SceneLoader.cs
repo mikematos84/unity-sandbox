@@ -49,7 +49,7 @@ public class SceneLoader : MonoBehaviour
     {
         LTSeq seq = LeanTween.sequence();
 
-        if (loadedScene != "App" && loadedScene != null)
+        if (string.IsNullOrEmpty(loadedScene) == false && loadedScene != "App")
         {
             seq.append(canvasFader.FadeIn());
             seq.append(() => StartCoroutine(UnloadAsync()));
