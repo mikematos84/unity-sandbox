@@ -1,0 +1,78 @@
+{
+	"dialogs": [
+		{
+			"id": 1,
+			"orderId": 1,
+			"npcRef": "Day4Steve",
+			"text": "Hi there, how are you doing"
+		},
+		{
+			"id": 2,
+			"orderId": 2,
+			"npcRef": "Day4Steve",
+			"text": "That's awesome. Do you know what you would like to be when you grow up?"
+		},
+		{
+			"id": 3,
+			"orderId": 3,
+			"npcRef": "Day4Steve",
+			"text": "Really? How come?"
+		},
+		{
+			"id": 4,
+			"orderId": 4,
+			"npcRef": "Day4Steve",
+			"text": "I'm sorry to here that"
+		},
+		{
+			"id": 5,
+			"orderId": 5,
+			"npcRef": "Day4Steve",
+			"text": "That's okay, its not like you have to know right of the bat"
+		}
+	],
+	"responses": [
+		{
+			"id": 1,
+			"dialogId": 1,
+			"text": "I'm good how are you",
+			"points": 100,
+			"nextDialogId": 2
+		},
+		{
+			"id": 2,
+			"dialogId": 1,
+			"text": "Not good",
+			"points": 50,
+			"nextDialogId": 3
+		},
+		{
+			"id": 3,
+			"dialogId": 1,
+			"text": "Just awful",
+			"points": 0,
+			"nextDialogId": 4
+		},
+		{
+			"id": 4,
+			"dialogId": 2,
+			"text": "Yea that is pretty cool",
+			"points": 0,
+			"nextDialogId": 4
+		},
+		{
+			"id": 5,
+			"dialogId": 2,
+			"text": "Oh I am not all that sure yet",
+			"points": 0,
+			"nextDialogId": 5
+		},
+		{
+			"id": 6,
+			"dialogId": 5,
+			"text": "Yea I know",
+			"points": 0,
+			"nextDialogId": 4
+		}
+	]
+}

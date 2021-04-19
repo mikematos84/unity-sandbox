@@ -12,8 +12,7 @@ namespace HeavyDev
     public class HttpService
     {
         protected MonoBehaviour mono;
-        protected string baseUrl;
-
+        
         LocalStorage localStorage { get { return ServiceLocator.Find<LocalStorage>(); } }
 
         public HttpService(MonoBehaviour mono)
@@ -41,7 +40,7 @@ namespace HeavyDev
 
         public HTTPRequest Request(string url, string data, HTTPMethods method, Action<HTTPRequest, HTTPResponse> success, Action<HTTPRequest, HTTPResponse> error)
         {
-            var http = new HTTPRequest(new Uri(baseUrl + url), method, (req, resp) =>
+            var http = new HTTPRequest(new Uri(url), method, (req, resp) =>
             {
                 switch (req.State)
                 {
@@ -81,7 +80,7 @@ namespace HeavyDev
 
         public HTTPRequest Login(string username, string password, Action<HTTPRequest, HTTPResponse> success, Action<HTTPRequest, HTTPResponse> error)
         {
-            var http = new HTTPRequest(new Uri(baseUrl + "/login"), HTTPMethods.Post, (req, resp) =>
+            var http = new HTTPRequest(new Uri("/login"), HTTPMethods.Post, (req, resp) =>
             {
                 switch (req.State)
                 {

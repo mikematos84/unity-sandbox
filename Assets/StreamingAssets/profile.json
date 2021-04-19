@@ -1,0 +1,29 @@
+{
+	"email": "mikematos84@gmail.com",
+	"firstName": "Mike",
+	"lastName": "Matos",
+	"gameData": {
+		"levels": [
+			{
+				"name": "Building",
+				"isLocked": false
+			},
+			{
+				"name": "Building (1)",
+				"isLocked": false
+			},
+			{
+				"name": "Building (2)",
+				"isLocked": true
+			},
+			{
+				"name": "Building (3)",
+				"isLocked": true
+			},
+			{
+				"name": "Building (4)",
+				"isLocked": true
+			}
+		]
+	}
+}

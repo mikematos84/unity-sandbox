@@ -1,8 +1,12 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using BestHTTP;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 namespace HeavyDev
 {
@@ -11,19 +15,24 @@ namespace HeavyDev
         // Configuration
         public static Dictionary<string, object> config = new Dictionary<string, object>();
 
-        private void Awake()
+        public string sceneToLoad = "Main";
+        public TextMeshProUGUI sceneLabel;
+
+        public bool isReady = false;
+
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += HandleSceneLoaded;
+        }
+
+        private void Start()
         {
             LoadConfigurationFile();
         }
 
-        /// <summary>
-        /// Load Services 
-        /// </summary>
-        private void Start()
+        private void HandleSceneLoaded(Scene scene, LoadSceneMode sceneMode)
         {
-            Messenger.ListenTo(Notifications.AppReady, HandleAppReady);
-            Messenger.ListenTo(Notifications.AppExit, HandleAppExit);
-            RegisterServices();
+            sceneLabel.text = scene.name;
         }
 
         /// <summary>
@@ -32,13 +41,38 @@ namespace HeavyDev
         private void LoadConfigurationFile()
         {
             Debug.Log(string.Format("<color=green>Loading configuration file</color>"));
-            TextAsset asset = Resources.Load("config") as TextAsset;
-            if (asset)
+            string filePath = Application.streamingAssetsPath + "/config.json";
+
+            new HTTPRequest(new Uri(filePath), HTTPMethods.Get, (req, resp) =>
             {
-                config.Clear();
-                config = JsonConvert.DeserializeObject<Dictionary<string, object>>(asset.text);
-            }
-            Debug.Log(string.Format("<color=green>Configuration loaded</color>"));
+                Debug.Log(string.Format("<color=blue>{0}</color>", resp.StatusCode));
+                if (resp.StatusCode == 200)
+                {
+                    config.Clear();
+                    config = JsonConvert.DeserializeObject<Dictionary<string, object>>(resp.DataAsText);
+                    Debug.Log(string.Format("<color=green>Configuration loaded</color>"));
+                }
+                else
+                {
+                    Debug.Log(string.Format("<color=yellow>Configuration not found</color>"));
+                }
+                InitializeApp();
+            }).Send();
+        }
+
+        /// <summary>
+        /// Initialize Application after configuration has been loaded
+        /// </summary>
+        public void InitializeApp()
+        {
+            //Turn of App Scene Camera;
+            Destroy(Camera.main.gameObject);
+
+            Messenger.ListenTo(Notifications.ServicesReady, HandleServicesReady);
+            Messenger.ListenTo(Notifications.AppReady, HandleAppReady);
+            Messenger.ListenTo(Notifications.AppExit, HandleAppExit);
+
+            RegisterServices();
         }
 
         /// <summary>
@@ -49,33 +83,54 @@ namespace HeavyDev
             Debug.Log(string.Format("<color=green>Registering services</color>"));
             ServiceLocator.Register(new List<object>
             {
-                //Register Local Storage
+                // Register App
+                this,
+                // Register Local Storage
                 new LocalStorage(this),
-                //Register HttpService
-                new HttpService(this) 
+                // Register HttpService
+                new HttpService(this),
+                // Scene Loader
+                GetComponentInChildren<SceneLoader>(true)
             }, (services) =>
             {
                 var list = services.Keys.ToArray();
                 Debug.Log(string.Format("<color=green>Services registered [{0}]</color>", string.Join("], [", list)));
                 Messenger.SendNote(Notifications.ServicesReady);
-                Messenger.SendNote(Notifications.AppReady);
-            });            
+            });
         }
 
+
+        /// <summary>
+        /// At this point, the apps core services have been loaded
+        /// but the app has not yet been initialize.
+        /// </summary>
+        /// <param name="obj"></param>
+        private void HandleServicesReady(object obj)
+        {
+            Debug.Log(string.Format("<color=green>Services Ready</color>"));
+            Messenger.SendNote(Notifications.AppReady);
+        }
         /// <summary>
         /// Ready to initiate application.
         /// At this point, all necessary core components of the application, such as 
-        /// configuration files, services, etct... have been loaded. 
+        /// configuration files, services, etc... have been loaded. 
         /// </summary>
         /// <param name="obj"></param>
         private void HandleAppReady(object obj)
         {
             Debug.Log(string.Format("<color=green>Application Ready</color>"));
+            isReady = true;
+            LoadScene(sceneToLoad);
         }
 
         private void HandleAppExit(object obj)
         {
             Debug.Log(string.Format("<color=green>Application Excited</color>"));
+        }
+
+        public void LoadScene(string sceneName)
+        {
+            ServiceLocator.Find<SceneLoader>().LoadScene(sceneName);
         }
     }
 }
